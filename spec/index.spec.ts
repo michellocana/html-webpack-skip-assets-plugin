@@ -41,7 +41,7 @@ const webpackDevOptions: webpack.Configuration = {
                 use: [{
                     loader: MiniCssExtractPlugin.loader
                 },{
-                    loader: 'css-loader'   
+                    loader: 'css-loader'
                 }]
             }
         ]
@@ -451,6 +451,24 @@ describe('HtmlWebpackSkipAssetsPlugin Production Mode', function () {
             expect(/script\s+.*?src\s*=\s*"(\/)?app\.[a-z0-9]+\.min\.js"/i.test(html), 'could not find app bundle').to.be.true;
             expect(/script\s+.*?src\s*=\s*"(\/)?styles\.[a-z0-9]+\.min\.js"/i.test(html), 'did not skip styles js bundle').to.be.false;
             expect(/link\s+.*?href\s*=\s*"(\/)?styles\.[a-z0-9]+\.min\.css"/i.test(html), 'could not find styles css bundle').to.be.true;
+            done();
+        });
+    });
+
+    it('should skip tags with no assets', (done) => {
+        webpack({ ...webpackProdOptions,
+            plugins: [
+                ...webpackProdOptions.plugins,
+                new HtmlWebpackPlugin({
+                    ...HtmlWebpackPluginOptions,
+                    excludeAssets: ['*.css']
+                }),
+                new HtmlWebpackSkipAssetsPlugin(),
+            ]
+        }, (err) => {
+            expect(!!err).to.be.false;
+            const html = getOutput();
+            expect(/<meta([^>])*>/i.test(html), 'could not find meta tag').to.be.true;
             done();
         });
     });

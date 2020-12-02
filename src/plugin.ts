@@ -89,6 +89,11 @@ export class HtmlWebpackSkipAssetsPlugin {
                     return false;
                 }
                 const asset = a.attributes.src || a.attributes.href;
+
+                if (!asset) {
+                    return true
+                }
+
                 if (typeof pattern === 'string') {
                     return minimatch(asset, pattern);
                 }
